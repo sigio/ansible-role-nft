@@ -52,7 +52,7 @@ table inet filter {
         ip saddr $trusted tcp dport { ssh } accept
 
         # Allow wireguard traffic
-        ip udp dport {{ wireguard_port }} accept
+        udp dport {{ wireguard_port }} accept
 
         {% if wireguard_instance_iface is defined %}
         # Allow traffic from wireguard network
@@ -61,11 +61,11 @@ table inet filter {
         {% endif %}
 
         # Open Ports (to world)
-        ip tcp dport $openports accept
+        tcp dport $openports accept
 
         {% if nft_allow_http|bool %}
         # http/https traffic
-        ip tcp dport { http, https } accept
+        tcp dport { http, https } accept
         {% endif %}
 
         # Group custom rules

@@ -13,6 +13,12 @@ nft_defines:
     - { name: "internal", value: [ "127.0.0.1", "127.0.0.2", "127.0.0.3" ] }
     - { name: "hostile", value: [ "127.6.6.6", "127.6.6.66", "127.6.66.6" ] }
 
+# UDP port for wireguard
+wireguard_port: 51820
+
+# Set to true on hosts/groups to open http / https
+nft_allow_http: false
+
 # Default policies per chain ( drop / reject / accept )
 nft_policy_input:       "drop"
 nft_policy_forward:     "accept"

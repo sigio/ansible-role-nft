@@ -5,7 +5,7 @@
     src: "{{item.src}}"
     dest: "{{item.dest}}"
     owner: "root"
-    grouo: "root"
+    group: "root"
     mode: "0700"
   with_items:
     - { src: "nftables.conf.j2", dest: "/tmp/nftables-test.conf" }
