@@ -1,5 +1,38 @@
 ---
 
+- name: Install nft tools (deb)
+  apt:
+    state: present
+    pkg:
+      - nft
+  when: ansible_os_family == "Debian"
+
+- name: install nft tools (rpm)
+  yum:
+    state: present
+    pkg:
+      - nft (FIXME)
+  when: ansible_os_family == "RedHat"
+
+- name: Stop and disable other firewalls
+  systemd:
+    name: "{{item}}"
+    state: stopped
+    enabled: no
+  with_items:
+    - firewalld
+  tags:
+    - nft-override
+
+- name: Enable nft-service
+  systemd:
+    name: "{{item}}"
+    enabled: yes
+  with_items:
+    - nftables
+  tags:
+    - nftservice
+
 - name: Template nftables.conf
   template:
     src: "{{item.src}}"
@@ -8,8 +41,8 @@
     group: "root"
     mode: "0700"
   with_items:
-    - { src: "nftables.conf.j2", dest: "/tmp/nftables-test.conf" }
+    - { src: "nftables.conf.j2", dest: "/tmp/nftables.conf", backup: "yes" }
   tags:
     - nft
-# notify:
-#    - reload nft
+  notify:
+    - reload nft service

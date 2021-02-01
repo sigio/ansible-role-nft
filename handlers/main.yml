@@ -1,0 +1,12 @@
+---
+
+- name: reload nft service
+  systemd:
+    name: "{{item}}"
+    state: reloaded
+    enabled: yes
+  with_items:
+    - nftables
+  tags:
+    - nftservice
+
