@@ -1,0 +1,140 @@
+#!/usr/bin/nft -f
+# {{ ansible_managed }}
+
+flush ruleset
+
+define trusted = {
+{% for item in trusted %}
+    {{ item }},
+{% endfor %}
+}
+
+define openports = {
+{% for item in openports %}
+    {{ item }},
+{% endfor %}
+}
+
+{% for custom in nft_defines %}
+# Custom define: {{custom.name}}
+define {{ custom.name }} = {
+    {% for entry in custom.value %}
+        {{ entry }},
+    {% endfor %}
+}
+
+{% endfor %}
+
+# Firewall rules
+table inet filter {
+    chain input {
+        type filter hook input priority 0;
+        policy {{nft_policy_input}};
+
+        # Established connections
+        ct state established,related accept
+        ct state invalid drop
+
+        # Limit icmp echo/reply
+        ip protocol icmp icmp type echo-request limit rate over 10/second burst 50 packets drop
+        ip6 nexthdr icmpv6 icmpv6 type echo-request limit rate over 10/second burst 50 packets drop
+
+        # Loopback traffic
+        iifname lo accept
+
+        # icmp
+        ip protocol icmp icmp type { destination-unreachable, echo-reply, echo-request, source-quench, time-exceeded } accept
+
+        # icmp6
+        ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, echo-reply, echo-request, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert, packet-too-big, parameter-problem, time-exceeded } accept
+
+        # Open ssh only for trusted machines
+        ip saddr $trusted tcp dport { ssh } accept
+
+        # Allow wireguard traffic
+        ip udp dport {{ wireguard_port }} accept
+
+        {% if wireguard_instance_iface is defined %}
+        # Allow traffic from wireguard network
+        iifname {{ wireguard_instance_iface }} accept
+
+        {% endif %}
+
+        # Open Ports (to world)
+        ip tcp dport $openports accept
+
+        {% if nft_allow_http|bool %}
+        # http/https traffic
+        ip tcp dport { http, https } accept
+        {% endif %}
+
+        # Group custom rules
+        {% for rule in group_nft_input %}
+        {{ rule }}
+        {% endfor %}
+
+        # Host custom rules
+        {% for rule in host_nft_input %}
+        {{ rule }}
+        {% endfor %}
+    }
+    chain forward {
+        type filter hook forward priority 0;
+        policy {{ nft_policy_forward }};
+
+        # Group custom rules
+        {% for rule in group_nft_forward %}
+        {{ rule }}
+        {% endfor %}
+
+        # Host custom rules
+        {% for rule in host_nft_forward %}
+        {{ rule }}
+        {% endfor %}
+    }
+    chain output {
+        type filter hook output priority 0;
+        policy {{ nft_policy_output }};
+
+        # Group custom rules
+        {% for rule in group_nft_output %}
+        {{ rule }}
+        {% endfor %}
+
+        # Host custom rules
+        {% for rule in host_nft_output %}
+        {{ rule }}
+        {% endfor %}
+    }
+}
+
+table ip nat {
+    chain postrouting {
+        type nat hook postrouting priority 100
+        policy {{ nft_policy_postrouting }};
+
+        # Group custom rules
+        {% for rule in group_nft_postrouting %}
+        {{ rule }}
+        {% endfor %}
+
+        # Host custom rules
+        {% for rule in host_nft_postrouting %}
+        {{ rule }}
+        {% endfor %}
+    }
+    chain prerouting {
+        type nat hook prerouting priority 100
+        policy {{ nft_policy_prerouting }};
+
+        # Group custom rules
+        {% for rule in group_nft_prerouting %}
+        {{ rule }}
+        {% endfor %}
+
+        # Host custom rules
+        {% for rule in host_nft_prerouting %}
+        {{ rule }}
+        {% endfor %}
+    }
+}

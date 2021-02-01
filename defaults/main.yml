@@ -1,0 +1,37 @@
+---
+
+# Machines allowed to do ssh traffic
+trusted:
+    - 10.11.12.13/32
+    - 10.11.12.14/22
+
+# tcp ports to open to $world
+openports:
+    - 25
+
+nft_defines:
+    - { name: "internal", value: [ "127.0.0.1", "127.0.0.2", "127.0.0.3" ] }
+    - { name: "hostile", value: [ "127.6.6.6", "127.6.6.66", "127.6.66.6" ] }
+
+# Default policies per chain ( drop / reject / accept )
+nft_policy_input:       "drop"
+nft_policy_forward:     "accept"
+nft_policy_output:      "accept"
+
+# Same for nat traffic
+nft_policy_prerouting:  "accept"
+nft_policy_postrouting: "accept"
+
+# And per host/group additions to rules:
+group_nft_input: []
+group_nft_forward: []
+group_nft_output: []
+
+host_nft_input: []
+host_nft_forward: []
+host_nft_output: []
+
+group_nft_postrouting: []
+host_nft_postrouting: []
+group_nft_prerouting: []
+host_nft_prerouting: []

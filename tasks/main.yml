@@ -1,0 +1,15 @@
+---
+
+- name: Template nftables.conf
+  template:
+    src: "{{item.src}}"
+    dest: "{{item.dest}}"
+    owner: "root"
+    grouo: "root"
+    mode: "0700"
+  with_items:
+    - { src: "nftables.conf.j2", dest: "/tmp/nftables-test.conf" }
+  tags:
+    - nft
+# notify:
+#    - reload nft
