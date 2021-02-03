@@ -37,7 +37,8 @@ table inet filter {
         ip6 nexthdr icmpv6 icmpv6 type { destination-unreachable, echo-reply, echo-request, nd-neighbor-solicit, nd-router-advert, nd-neighbor-advert, packet-too-big, parameter-problem, time-exceeded } accept
 
         # Open ssh only for trusted machines
-        ip saddr $trusted tcp dport { ssh } accept
+        ip saddr $trusted4 tcp dport { ssh } accept
+        ip6 saddr $trusted6 tcp dport { ssh } accept
 
 {% if wireguard_port is defined and wireguard_port|int > 0 %}
         # Allow wireguard traffic
