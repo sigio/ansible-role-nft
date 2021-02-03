@@ -3,18 +3,6 @@
 
 flush ruleset
 
-define trusted = {
-{% for item in trusted %}
-    {{ item }},
-{% endfor %}
-}
-
-define openports = {
-{% for item in openports %}
-    {{ item }},
-{% endfor %}
-}
-
 {% for custom in nft_defines %}
 # Custom define: {{custom.name}}
 define {{ custom.name }} = {
@@ -51,6 +39,7 @@ table inet filter {
         # Open ssh only for trusted machines
         ip saddr $trusted tcp dport { ssh } accept
 
+{% if wireguard_port is defined and wireguard_port|int > 0 %}
         # Allow wireguard traffic
         udp dport {{ wireguard_port }} accept
 
@@ -59,6 +48,7 @@ table inet filter {
         iifname {{ wireguard_instance_iface }} accept
 
         {% endif %}
+[% endif %}
 
         # Open Ports (to world)
         tcp dport $openports accept

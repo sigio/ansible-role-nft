@@ -1,17 +1,11 @@
 ---
 
-# Machines allowed to do ssh traffic
-trusted:
-    - 10.11.12.13/32
-    - 10.11.12.14/22
-
-# tcp ports to open to $world
-openports:
-    - 25
-
+# Trusted is to allow SSH-access from
+# Openports is fully open tcp ports to world
+# Others can be defined where needed
 nft_defines:
-    - { name: "internal", value: [ "127.0.0.1", "127.0.0.2", "127.0.0.3" ] }
-    - { name: "hostile", value: [ "127.6.6.6", "127.6.6.66", "127.6.66.6" ] }
+    - { name: "trusted", value: [ "10.11.12.13/32", "10.11.12.14/32" ] }
+    - { name: "openports", value: [ "http", "https" ] }
 
 # UDP port for wireguard
 wireguard_port: 51820
