@@ -41,9 +41,9 @@
     owner: "root"
     group: "root"
     mode: "0700"
+    validate: "{{item.validate|default(null)}}"
   with_items:
-    - { src: "nftables.conf.j2", dest: "{{nft_main_config}}", backup: "yes" }
-  validate: /usr/sbin/nft -c -f %s
+      - { src: "nftables.conf.j2", dest: "{{nft_main_config}}", backup: "yes", validate: "/usr/sbin/nft -c -f %s" }
   tags:
     - nft
   notify:
