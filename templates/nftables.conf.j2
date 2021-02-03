@@ -48,7 +48,7 @@ table inet filter {
         iifname {{ wireguard_instance_iface }} accept
 
         {% endif %}
-[% endif %}
+{% endif %}
 
         # Open Ports (to world)
         tcp dport $openports accept
