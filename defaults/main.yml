@@ -1,5 +1,8 @@
 ---
 
+# In what file do we template our config
+nft_main_config: "/etc/nftables.conf"
+
 # Trusted is to allow SSH-access from
 # Openports is fully open tcp ports to world
 # Others can be defined where needed
