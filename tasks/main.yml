@@ -23,6 +23,8 @@
     - firewalld
   tags:
     - nft-override
+  when:
+    - nft_disable_firewalld|bool
 
 - name: Enable nft-service
   systemd:
@@ -32,7 +34,7 @@
     - nftables
   tags:
     - nftservice
-  when: ansible_os_family == "Debian"
+  when: ansible_os_family == "Debian" or ansible_os_family == "RedHat"
 
 - name: Template nftables.conf
   template:

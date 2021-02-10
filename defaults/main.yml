@@ -1,7 +1,10 @@
 ---
 
-# In what file do we template our config
+# In what file do we template our config, on centos: /etc/nftables/main.nft
 nft_main_config: "/etc/nftables.conf"
+
+# Disable firewalld ?
+nft_disable_firewalld: false
 
 # Trusted4/trusted6 is to allow SSH-access from (ipv4 / ipv6 subnets)
 # Openports is fully open tcp ports to world
