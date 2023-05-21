@@ -4,7 +4,7 @@
   apt:
     state: present
     pkg:
-      - nft
+      - nftables
   when: ansible_os_family == "Debian"
 
 - name: install nft tools (rpm)
